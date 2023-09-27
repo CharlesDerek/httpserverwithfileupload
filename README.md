@@ -5,8 +5,8 @@ This script allows the user to create an HTTP server on the fly for file sharing
 ## Installation
 
 ```
-git clone https://github.com/sgrontflix/simplehttpserverwithupload
-cd simplehttpserverwithupload
+git clons://github.com/charlesderek/httpserverwithfileupload
+cd simplehttpserverwithfileupload
 ```
 
 ## Usage

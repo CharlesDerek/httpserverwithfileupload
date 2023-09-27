@@ -1,7 +1,7 @@
 """Simple HTTP server with upload functionality and optional SSL/TLS support."""
 
-__version__ = '0.3'
-__author__ = 'sgrontflix'
+__version__ = '0.1'
+__author__ = 'charlesderek'
 
 import contextlib
 import html
@@ -9,7 +9,7 @@ import http.server
 import io
 import os
 import re
-import socket  # For gethostbyaddr()
+import socket  # gethostbyaddr()
 import ssl
 import sys
 import urllib.parse
@@ -18,7 +18,7 @@ from functools import partial
 from http import HTTPStatus
 
 
-def sanitize_filename(filename: str) -> str:
+def sanitize_name_of_file(filename: str) -> str:
     """
     Replaces all forbidden chars with '' and removes unnecessary whitespaces
     If, after sanitization, the given filename is empty, the function will return 'file_[UUID][ext]'
@@ -48,7 +48,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         """Serve a POST request."""
         # upload file
-        result, message = self.handle_upload()
+        result, message = self.uploader()
 
         r = []
         enc = sys.getfilesystemencoding()
@@ -80,8 +80,8 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
             self.copyfile(f, self.wfile)
             f.close()
 
-    def handle_upload(self):
-        """Handle the file upload."""
+    def uploader(self):
+        """Handle upload."""
 
         # extract boundary from headers
         boundary = re.search(f'boundary=([^;]+)', self.headers['content-type']).group(1)
@@ -99,7 +99,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         if not filenames:
             return False, 'couldn\'t find file name(s).'
 
-        filenames = [sanitize_filename(filename) for filename in filenames]
+        filenames = [sanitize_name_of_file(filename) for filename in filenames]
 
         # find all boundary occurrences in data
         boundary_indices = list((i for i, line in enumerate(data) if re.search(boundary, str(line))))
@@ -122,7 +122,7 @@ class SimpleHTTPRequestHandlerWithUpload(http.server.SimpleHTTPRequestHandler):
         return True, filenames
 
     def list_directory(self, path):
-        """Helper to produce a directory listing (absent index.html).
+        """Helper to produce a directory if index is absent (index.html).
         Return value is either a file object, or None (indicating an
         error).  In either case, the headers are sent, making the
         interface the same as for send_head().

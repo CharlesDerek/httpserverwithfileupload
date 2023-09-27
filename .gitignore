@@ -1,0 +1,6 @@
+/public/*
+*.pem
+*.enc
+*.env
+*.sh
+
